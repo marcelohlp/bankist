@@ -60,3 +60,41 @@ const inputTransferAmount = document.querySelector(".form__input--amount");
 const inputLoanAmount = document.querySelector(".form__input--loan-amount");
 const inputCloseUsername = document.querySelector(".form__input--user");
 const inputClosePin = document.querySelector(".form__input--pin");
+
+const displayMovements = function (movements) {
+    containerMovements.innerHTML = ""; // Removes the content
+    movements.forEach((movement, index) => {
+        const type = movement > 0 ? "deposit" : "withdrawal";
+        const html = `
+        <div class="movements__row">
+            <div class="movements__type movements__type--${type}">
+                ${index + 1} ${type}    
+            </div>
+            <div class="movements__value">
+                ${movement}
+            </div>
+        </div>
+        `;
+        containerMovements.insertAdjacentHTML("afterbegin", html);
+    });
+};
+
+displayMovements(account1.movements);
+
+const movements = [200, 450, -400, 3000, -650, -130, 70, 1300]; // USD =>
+
+// Map method => It returns a new array according to its logic.
+
+const eurToUsd = 1.1;
+
+const movementsUsd = movements.map((movement) => movement * eurToUsd);
+
+console.log(movementsUsd);
+
+const movementsDescriptions = movements.map((movement, index, array) => {
+    return ` Movement ${index + 1}: You ${
+        movement > 0 ? "deposit" : "withdrew"
+    } ${Math.abs(movement)}. `;
+});
+
+console.log(movementsDescriptions);
