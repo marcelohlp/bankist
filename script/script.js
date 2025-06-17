@@ -93,4 +93,13 @@ const createUsernames = function (accounts) {
 
 createUsernames(accounts);
 
-console.log(accounts.map((account) => account.username));
+// console.log(accounts.map((account) => account.username));
+
+const calcDisplayBalance = function (movements) {
+    const balance = movements.reduce((total, movement) => total + movement, 0);
+    labelBalance.textContent = `${balance} EUR`;
+};
+
+calcDisplayBalance(account1.movements);
+
+const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
