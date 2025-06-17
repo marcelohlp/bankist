@@ -81,20 +81,16 @@ const displayMovements = function (movements) {
 
 displayMovements(account1.movements);
 
-const movements = [200, 450, -400, 3000, -650, -130, 70, 1300]; // USD =>
+const createUsernames = function (accounts) {
+    accounts.forEach((account) => {
+        account.username = account.owner
+            .toLocaleLowerCase()
+            .split(" ")
+            .map((word) => word[0])
+            .join("");
+    });
+};
 
-// Map method => It returns a new array according to its logic.
+createUsernames(accounts);
 
-const eurToUsd = 1.1;
-
-const movementsUsd = movements.map((movement) => movement * eurToUsd);
-
-console.log(movementsUsd);
-
-const movementsDescriptions = movements.map((movement, index, array) => {
-    return ` Movement ${index + 1}: You ${
-        movement > 0 ? "deposit" : "withdrew"
-    } ${Math.abs(movement)}. `;
-});
-
-console.log(movementsDescriptions);
+console.log(accounts.map((account) => account.username));
