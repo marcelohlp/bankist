@@ -96,6 +96,18 @@ btnTransfer.addEventListener("click", (event) => {
     }
 });
 
+btnLoan.addEventListener("click", (event) => {
+    event.preventDefault(); // => Removes the default behavior of submitting
+
+    const amount = Number(inputLoanAmount.value);
+
+    if (amount && amount > 0 && currentAccount.movements.some((movement) => movement >= (amount * 10) / 100)) {
+        currentAccount.movements.push(amount);
+        cleanFields(inputLoanAmount);
+        updateUI(currentAccount);
+    }
+});
+
 btnClose.addEventListener("click", (event) => {
     event.preventDefault(); // => Removes the default behavior of submitting
 
@@ -177,4 +189,4 @@ const hideUI = function () {
     containerApp.style.opacity = 0;
 };
 
-// const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
+const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
