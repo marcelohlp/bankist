@@ -61,55 +61,9 @@ const inputLoanAmount = document.querySelector(".form__input--loan-amount");
 const inputCloseUsername = document.querySelector(".form__input--user");
 const inputClosePin = document.querySelector(".form__input--pin");
 
-const displayMovements = function (movements) {
-    containerMovements.innerHTML = ""; // Removes the content
-    movements.forEach((movement, index) => {
-        const type = movement > 0 ? "deposit" : "withdrawal";
-        const html = `
-        <div class="movements__row">
-            <div class="movements__type movements__type--${type}">
-                ${index + 1} ${type}    
-            </div>
-            <div class="movements__value">
-                ${movement} €
-            </div>
-        </div>
-        `;
-        containerMovements.insertAdjacentHTML("afterbegin", html);
-    });
-};
-
-const createUsernames = function (accounts) {
-    accounts.forEach((account) => {
-        account.username = account.owner
-            .toLocaleLowerCase()
-            .split(" ")
-            .map((word) => word[0])
-            .join("");
-    });
-};
+let currentAccount;
 
 createUsernames(accounts);
-
-const calcDisplayBalance = function (account) {
-    account.balance = account.movements.reduce((total, movement) => total + movement, 0);
-    labelBalance.textContent = `${account.balance} €`;
-};
-
-const displaySummary = function (account) {
-    const incomes = account.movements.filter((movement) => movement > 0).reduce((total, movemente) => total + movemente, 0);
-    labelSumIn.textContent = `${incomes} €`;
-    const out = account.movements.filter((movement) => movement < 0).reduce((total, movemente) => total + movemente, 0);
-    labelSumOut.textContent = `${Math.abs(out)} €`;
-    const interest = account.movements
-        .filter((movement) => movement > 0)
-        .map((deposit) => (deposit * account.interestRate) / 100)
-        .filter((interest) => interest >= 1)
-        .reduce((total, interest) => total + interest, 0);
-    labelSumInterest.textContent = `${interest} €`;
-};
-
-let currentAccount;
 
 btnLogin.addEventListener("click", (event) => {
     event.preventDefault(); // => Removes the default behavior of submitting
@@ -142,10 +96,57 @@ btnTransfer.addEventListener("click", (event) => {
     }
 });
 
+function createUsernames(accounts) {
+    accounts.forEach((account) => {
+        account.username = account.owner
+            .toLocaleLowerCase()
+            .split(" ")
+            .map((word) => word[0])
+            .join("");
+    });
+}
+
 const updateUI = function (account) {
-    displayMovements(account.movements);
+    displayMovements(account);
     calcDisplayBalance(account);
     displaySummary(account);
+};
+
+const displayMovements = function (account) {
+    containerMovements.innerHTML = ""; // => Removes the content
+
+    account.movements.forEach((movement, index) => {
+        const type = movement > 0 ? "deposit" : "withdrawal";
+        const html = `
+        <div class="movements__row">
+            <div class="movements__type movements__type--${type}">
+                ${index + 1} ${type}    
+            </div>
+            <div class="movements__value">
+                ${movement} €
+            </div>
+        </div>
+        `;
+        containerMovements.insertAdjacentHTML("afterbegin", html);
+    });
+};
+
+const calcDisplayBalance = function (account) {
+    account.balance = account.movements.reduce((total, movement) => total + movement, 0);
+    labelBalance.textContent = `${account.balance} €`;
+};
+
+const displaySummary = function (account) {
+    const incomes = account.movements.filter((movement) => movement > 0).reduce((total, movemente) => total + movemente, 0);
+    labelSumIn.textContent = `${incomes} €`;
+    const out = account.movements.filter((movement) => movement < 0).reduce((total, movemente) => total + movemente, 0);
+    labelSumOut.textContent = `${Math.abs(out)} €`;
+    const interest = account.movements
+        .filter((movement) => movement > 0)
+        .map((deposit) => (deposit * account.interestRate) / 100)
+        .filter((interest) => interest >= 1)
+        .reduce((total, interest) => total + interest, 0);
+    labelSumInterest.textContent = `${interest} €`;
 };
 
 const cleanFields = function (...fields) {
