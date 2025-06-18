@@ -112,14 +112,15 @@ const displaySummary = function (account) {
 let currentAccount;
 
 btnLogin.addEventListener("click", (event) => {
-    event.preventDefault(); // => Remove the default behavior of submiting
+    event.preventDefault(); // => Removes the default behavior of submitting
+
     currentAccount = accounts.find((account) => account.username === inputLoginUsername.value);
+
     if (currentAccount?.pin === Number(inputLoginPin.value)) {
+        cleanFields(inputLoginUsername, inputLoginPin);
         labelWelcome.textContent = `Welcome back, ${currentAccount.owner.split(" ").at(0)}`;
         containerApp.style.opacity = 100;
         updateUI(currentAccount);
-        inputLoginUsername.value = inputLoginPin.value = "";
-        inputLoginPin.blur();
     } else {
         labelWelcome.textContent = `Invalid user!`;
         containerApp.style.opacity = 0;
@@ -127,23 +128,29 @@ btnLogin.addEventListener("click", (event) => {
 });
 
 btnTransfer.addEventListener("click", (event) => {
-    event.preventDefault();
+    event.preventDefault(); // => Removes the default behavior of submitting
 
     const amount = Number(inputTransferAmount.value);
     const receiverAccount = accounts.find((account) => account.username === inputTransferTo.value);
+
+    cleanFields(inputTransferAmount, inputTransferTo);
 
     if (amount > 0 && amount <= currentAccount.balance && receiverAccount && receiverAccount?.username !== currentAccount.username) {
         currentAccount.movements.push(-amount);
         receiverAccount.movements.push(amount);
         updateUI(currentAccount);
     }
-
-    inputTransferAmount.value = inputTransferTo.value = "";
-    inputTransferTo.blur();
 });
 
 const updateUI = function (account) {
     displayMovements(account.movements);
     calcDisplayBalance(account);
     displaySummary(account);
+};
+
+const cleanFields = function (...fields) {
+    fields.forEach((field) => {
+        field.value = "";
+    });
+    fields.at(-1).blur(); // => Removes focus from the field.
 };
