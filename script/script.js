@@ -73,11 +73,11 @@ btnLogin.addEventListener("click", (event) => {
     if (currentAccount?.pin === Number(inputLoginPin.value)) {
         cleanFields(inputLoginUsername, inputLoginPin);
         labelWelcome.textContent = `Welcome back, ${currentAccount.owner.split(" ").at(0)}`;
-        containerApp.style.opacity = 100;
+        showUI();
         updateUI(currentAccount);
     } else {
         labelWelcome.textContent = `Invalid user!`;
-        containerApp.style.opacity = 0;
+        hideUI();
     }
 });
 
@@ -93,6 +93,19 @@ btnTransfer.addEventListener("click", (event) => {
         currentAccount.movements.push(-amount);
         receiverAccount.movements.push(amount);
         updateUI(currentAccount);
+    }
+});
+
+btnClose.addEventListener("click", (event) => {
+    event.preventDefault(); // => Removes the default behavior of submitting
+
+    cleanFields(inputCloseUsername, inputClosePin);
+
+    if (inputCloseUsername.value === currentAccount.username && Number(inputClosePin.value) === currentAccount.pin) {
+        const accountIndex = accounts.findIndex((account) => account.username === currentAccount.username);
+        accounts.splice(accountIndex, 1);
+        hideUI();
+        currentAccount = null;
     }
 });
 
@@ -155,3 +168,13 @@ const cleanFields = function (...fields) {
     });
     fields.at(-1).blur(); // => Removes focus from the field.
 };
+
+const showUI = function () {
+    containerApp.style.opacity = 100;
+};
+
+const hideUI = function () {
+    containerApp.style.opacity = 0;
+};
+
+// const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
