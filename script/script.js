@@ -16,10 +16,10 @@ const account1 = {
         "2019-12-23T07:42:02.383Z",
         "2020-01-28T09:15:04.904Z",
         "2020-04-01T10:17:24.185Z",
-        "2020-05-08T14:11:59.604Z",
-        "2020-05-27T17:01:17.194Z",
-        "2020-07-11T23:36:17.929Z",
-        "2020-07-12T10:51:36.790Z",
+        "2020-05-23T14:11:59.604Z",
+        "2025-06-21T17:01:17.194Z",
+        "2025-06-22T23:36:17.929Z",
+        "2025-06-23T10:51:36.790Z",
     ],
     currency: "EUR",
     locale: "pt-PT", // de-DE
@@ -181,10 +181,7 @@ const displayMovements = function (account, sort = false) {
     movementsAndDates.forEach((movementAndDate, index) => {
         const type = movementAndDate.movement > 0 ? "deposit" : "withdrawal";
         const date = new Date(movementAndDate.date);
-        const day = `${date.getDate()}`.padStart(2, 0);
-        const month = `${date.getMonth() + 1}`.padStart(2, 0);
-        const year = date.getFullYear();
-        const displayDate = `${day}/${month}/${year}`;
+        const displayDate = formatMovementDate(date);
         const html = `
         <div class="movements__row">
             <div class="movements__type movements__type--${type}">
@@ -232,6 +229,21 @@ const showUI = function () {
 const hideUI = function () {
     containerApp.style.opacity = 0;
 };
+
+function formatMovementDate(date) {
+    const calcDaysPassed = (dateOne, dateTwo) => Math.round(Math.abs((dateTwo - dateOne) / (1000 * 60 * 60 * 24)));
+    const daysPassed = calcDaysPassed(new Date(), date);
+
+    if (daysPassed === 0) return `Today`;
+    if (daysPassed === 1) return `Yesterday`;
+    if (daysPassed <= 7) return `${daysPassed} days ago`;
+    else {
+        const day = `${date.getDate()}`.padStart(2, 0);
+        const month = `${date.getMonth() + 1}`.padStart(2, 0);
+        const year = date.getFullYear();
+        return `${day}/${month}/${year}`;
+    }
+}
 
 // // FAKE LOGIN
 // currentAccount = account1;
