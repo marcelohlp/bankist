@@ -77,13 +77,6 @@ createUsernames(accounts);
 
 let currentAccount;
 let sorted = false;
-const currentDate = new Date();
-const day = `${currentDate.getDate()}`.padStart(2, 0);
-const month = `${currentDate.getMonth() + 1}`.padStart(2, 0);
-const year = currentDate.getFullYear();
-const hour = `${currentDate.getHours()}`.padStart(2, 0);
-const minute = `${currentDate.getMinutes()}`.padStart(2, 0);
-labelDate.textContent = `${day}/${month}/${year}, ${hour}:${minute}`;
 
 btnLogin.addEventListener("click", (event) => {
     event.preventDefault(); // => Removes the default behavior of submitting
@@ -91,6 +84,16 @@ btnLogin.addEventListener("click", (event) => {
     currentAccount = accounts.find((account) => account.username === inputLoginUsername.value);
 
     if (currentAccount?.pin === +inputLoginPin.value) {
+        const currentDate = new Date();
+        const options = {
+            day: "numeric",
+            month: "numeric",
+            year: "numeric",
+            hour: "numeric",
+            minute: "numeric",
+        };
+        labelDate.textContent = new Intl.DateTimeFormat(currentAccount.locale, options).format(currentDate);
+
         cleanFields(inputLoginUsername, inputLoginPin);
         labelWelcome.textContent = `Welcome back, ${currentAccount.owner.split(" ").at(0)}`;
         showUI();
@@ -181,7 +184,7 @@ const displayMovements = function (account, sort = false) {
     movementsAndDates.forEach((movementAndDate, index) => {
         const type = movementAndDate.movement > 0 ? "deposit" : "withdrawal";
         const date = new Date(movementAndDate.date);
-        const displayDate = formatMovementDate(date);
+        const displayDate = formatMovementDate(date, currentAccount.locale);
         const html = `
         <div class="movements__row">
             <div class="movements__type movements__type--${type}">
@@ -230,7 +233,7 @@ const hideUI = function () {
     containerApp.style.opacity = 0;
 };
 
-function formatMovementDate(date) {
+function formatMovementDate(date, locale) {
     const calcDaysPassed = (dateOne, dateTwo) => Math.round(Math.abs((dateTwo - dateOne) / (1000 * 60 * 60 * 24)));
     const daysPassed = calcDaysPassed(new Date(), date);
 
@@ -238,10 +241,7 @@ function formatMovementDate(date) {
     if (daysPassed === 1) return `Yesterday`;
     if (daysPassed <= 7) return `${daysPassed} days ago`;
     else {
-        const day = `${date.getDate()}`.padStart(2, 0);
-        const month = `${date.getMonth() + 1}`.padStart(2, 0);
-        const year = date.getFullYear();
-        return `${day}/${month}/${year}`;
+        return new Intl.DateTimeFormat(locale).format(date);
     }
 }
 
