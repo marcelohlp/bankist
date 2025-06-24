@@ -75,7 +75,7 @@ const inputClosePin = document.querySelector(".form__input--pin");
 
 createUsernames(accounts);
 
-let currentAccount;
+let currentAccount, timer;
 let sorted = false;
 
 btnLogin.addEventListener("click", (event) => {
@@ -95,11 +95,12 @@ btnLogin.addEventListener("click", (event) => {
         labelDate.textContent = new Intl.DateTimeFormat(currentAccount.locale, options).format(currentDate);
 
         cleanFields(inputLoginUsername, inputLoginPin);
-        labelWelcome.textContent = `Welcome back, ${currentAccount.owner.split(" ").at(0)}`;
+        setLabelWelcome(`Welcome back, ${currentAccount.owner.split(" ").at(0)}`);
+        refreshTimer();
         showUI();
         updateUI(currentAccount);
     } else {
-        labelWelcome.textContent = `Invalid user!`;
+        setLabelWelcome(`Invalid user!`);
         hideUI();
     }
 });
@@ -118,6 +119,7 @@ btnTransfer.addEventListener("click", (event) => {
         currentAccount.movementsDates.push(new Date().toISOString());
         receiverAccount.movementsDates.push(new Date().toISOString());
         updateUI(currentAccount);
+        refreshTimer();
     }
 });
 
@@ -133,6 +135,7 @@ btnLoan.addEventListener("click", (event) => {
             cleanFields(inputLoanAmount);
             updateUI(currentAccount);
         }, 2500);
+        refreshTimer();
     }
 });
 
@@ -257,7 +260,34 @@ function formatMovementValue(value, locale, currency) {
     return new Intl.NumberFormat(locale, options).format(value);
 }
 
-// // FAKE LOGIN
-// currentAccount = account1;
-// updateUI(currentAccount);
-// containerApp.style.opacity = 100;
+function startLogOutTimer() {
+    let time = 300;
+    const tick = () => {
+        let min = String(Math.trunc(time / 60)).padStart(2, 0);
+        let sec = String(time % 60).padStart(2, 0);
+        labelTimer.textContent = `${min}:${sec}`;
+        if (time === 0) {
+            clearInterval(timer);
+            logout();
+        }
+        time--;
+    };
+    tick();
+    const timer = setInterval(tick, 1000);
+    return timer;
+}
+
+function logout() {
+    hideUI();
+    setLabelWelcome("Log in to get started");
+    currentAccount = null;
+}
+
+function setLabelWelcome(text) {
+    labelWelcome.textContent = text;
+}
+
+function refreshTimer() {
+    if (timer) clearInterval(timer);
+    timer = startLogOutTimer();
+}
