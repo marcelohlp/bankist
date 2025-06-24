@@ -183,8 +183,10 @@ const displayMovements = function (account, sort = false) {
 
     movementsAndDates.forEach((movementAndDate, index) => {
         const type = movementAndDate.movement > 0 ? "deposit" : "withdrawal";
+
         const date = new Date(movementAndDate.date);
         const displayDate = formatMovementDate(date, currentAccount.locale);
+
         const html = `
         <div class="movements__row">
             <div class="movements__type movements__type--${type}">
@@ -192,7 +194,7 @@ const displayMovements = function (account, sort = false) {
             </div>
             <div class="movements__date">${displayDate}</div>
             <div class="movements__value">
-                ${movementAndDate.movement.toFixed(2)} €
+                ${formatMovementValue(movementAndDate.movement.toFixed(2), currentAccount.locale, currentAccount.currency)}
             </div>
         </div>
         `;
@@ -202,20 +204,20 @@ const displayMovements = function (account, sort = false) {
 
 const calcDisplayBalance = function (account) {
     account.balance = account.movements.reduce((total, movement) => total + movement, 0);
-    labelBalance.textContent = `${account.balance.toFixed(2)} €`;
+    labelBalance.textContent = `${formatMovementValue(account.balance.toFixed(2), currentAccount.locale, currentAccount.currency)}`;
 };
 
 const displaySummary = function (account) {
     const incomes = account.movements.filter((movement) => movement > 0).reduce((total, movemente) => total + movemente, 0);
-    labelSumIn.textContent = `${incomes.toFixed(2)} €`;
+    labelSumIn.textContent = `${formatMovementValue(incomes.toFixed(2), currentAccount.locale, currentAccount.currency)}`;
     const out = account.movements.filter((movement) => movement < 0).reduce((total, movemente) => total + movemente, 0);
-    labelSumOut.textContent = `${Math.abs(out).toFixed(2)} €`;
+    labelSumOut.textContent = `${formatMovementValue(Math.abs(out).toFixed(2), currentAccount.locale, currentAccount.currency)}`;
     const interest = account.movements
         .filter((movement) => movement > 0)
         .map((deposit) => (deposit * account.interestRate) / 100)
         .filter((interest) => interest >= 1)
         .reduce((total, interest) => total + interest, 0);
-    labelSumInterest.textContent = `${interest.toFixed(2)} €`;
+    labelSumInterest.textContent = `${formatMovementValue(interest.toFixed(2), currentAccount.locale, currentAccount.currency)}`;
 };
 
 const cleanFields = function (...fields) {
@@ -243,6 +245,14 @@ function formatMovementDate(date, locale) {
     else {
         return new Intl.DateTimeFormat(locale).format(date);
     }
+}
+
+function formatMovementValue(value, locale, currency) {
+    const options = {
+        style: "currency",
+        currency: currency,
+    };
+    return new Intl.NumberFormat(locale, options).format(value);
 }
 
 // // FAKE LOGIN
