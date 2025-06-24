@@ -127,10 +127,12 @@ btnLoan.addEventListener("click", (event) => {
     const amount = Math.floor(inputLoanAmount.value);
 
     if (amount && amount > 0 && currentAccount.movements.some((movement) => movement >= (amount * 10) / 100)) {
-        currentAccount.movements.push(amount);
-        currentAccount.movementsDates.push(new Date().toISOString());
-        cleanFields(inputLoanAmount);
-        updateUI(currentAccount);
+        setTimeout(() => {
+            currentAccount.movements.push(amount);
+            currentAccount.movementsDates.push(new Date().toISOString());
+            cleanFields(inputLoanAmount);
+            updateUI(currentAccount);
+        }, 2500);
     }
 });
 
